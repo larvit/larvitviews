@@ -1,3 +1,3 @@
 # Larvitviews
 
-View stuff for larv it stuff
+Wrapper for underscore templates to handle partials and hierarchy

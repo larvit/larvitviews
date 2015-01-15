@@ -8,7 +8,7 @@
 	"contributors": [],
 	"dependencies": {
 		"underscore": "x",
-		"utils-merge": "x"
+		"winston": "x"
 	},
 	"description": "Views for node.js",
 	"devDependencies": {},
@@ -24,7 +24,7 @@
 	},
 	"version": "0.0.1beta",
 	"readmeFilename": "README.md",
-	"readme": "# larvitview\n\nVery simple view library",
+	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {
 		"url": "https://github.com/larvit/larvitviews/issues"
 	},
