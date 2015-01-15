@@ -1,0 +1,33 @@
+{
+	"author": {
+		"name": "Mikael 'Lilleman' Göransson",
+		"email": "lilleman@larvit.se",
+		"url": "http://github.com/hemligabyran/larvitRouter"
+	},
+	"private": false,
+	"contributors": [],
+	"dependencies": {
+		"underscore": "x",
+		"utils-merge": "x"
+	},
+	"description": "Views for node.js",
+	"devDependencies": {},
+	"keywords": [
+		"view",
+		"template"
+	],
+	"main": "larvitviews.js",
+	"name": "larvitviews",
+	"repository": {
+		"url": "https://github.com/larvit/larvitviews",
+		"type": "git"
+	},
+	"version": "0.0.1beta",
+	"readmeFilename": "README.md",
+	"readme": "# larvitview\n\nVery simple view library",
+	"bugs": {
+		"url": "https://github.com/larvit/larvitviews/issues"
+	},
+	"homepage": "https://github.com/larvit/larvitviews",
+	"scripts": {}
+}
