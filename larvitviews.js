@@ -15,7 +15,7 @@ var fs            = require('fs'),
  */
 function compileTmpl(staticFilename, callback) {
 	if (compiledTmpls[staticFilename] === undefined) {
-		log.debug('Comipling previous uncompiled template "' + staticFilename + '"');
+		log.debug('Compiling previous uncompiled template "' + staticFilename + '"');
 
 		fs.readFile(staticFilename, 'utf8', function(err, tmplFileContent){
 			if ( ! err) {
@@ -86,6 +86,10 @@ exports = module.exports = function(options) {
 		partial = partials[partialNr];
 
 		localData = _.extend(partial.data, {'tmplParts': rootData.tmplParts});
+
+		if (rootData._global !== undefined) {
+			localData._global = rootData._global;
+		}
 
 		returnObj.render(partial.tmplName, localData, function(err, tmplStr) {
 			if (err) {
