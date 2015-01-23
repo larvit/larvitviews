@@ -15,7 +15,7 @@ var fs            = require('fs'),
  */
 function compileTmpl(staticFilename, callback) {
 	if (compiledTmpls[staticFilename] === undefined) {
-		log.debug('Compiling previous uncompiled template "' + staticFilename + '"');
+		log.debug('larvitviews: Compiling previous uncompiled template "' + staticFilename + '"');
 
 		fs.readFile(staticFilename, 'utf8', function(err, tmplFileContent){
 			if ( ! err) {
@@ -23,13 +23,44 @@ function compileTmpl(staticFilename, callback) {
 
 				callback(null, compiledTmpls[staticFilename]);
 			} else {
-				log.error('Could not compile template "' + staticFilename + '"');
+				log.error('larvitviews: Could not compile template "' + staticFilename + '"');
 
 				callback(err);
 			}
 		});
 	} else {
 		callback(null, compiledTmpls[staticFilename]);
+	}
+}
+
+/**
+ * Get a deep value from an object by a string path
+ * For example:
+ * var foo = {'bar': {'lurker': 'someValue'}}
+ * getValByPath(foo, 'bar.lurker') returns 'someValue'
+ *
+ * @param obj obj
+ * @param str path
+ * @return mixed
+ */
+function getValByPath(obj, path) {
+	var p;
+
+	if (typeof path === 'string') {
+		path = path.split('.');
+	}
+
+	if (path.length > 1) {
+		p = path.shift();
+
+		if (typeof obj[p] === 'object') {
+			return getValByPath(obj[p], path);
+		} else {
+			return undefined;
+		}
+
+	} else {
+		return obj[path[0]];
 	}
 }
 
@@ -45,12 +76,12 @@ exports = module.exports = function(options) {
 	/**
 	 * Render template
 	 *
-	 * @param str tmplName - filename, without ".tmpl" and relative to options.tmplPath
+	 * @param str tmplPath - filename, without ".tmpl" and relative to options.tmplPath
 	 * @param obj data - data to be passed to the template rendering
 	 * @param func callback(null, string)
 	 */
-	returnObj.render = function(tmplName, data, callback) {
-		compileTmpl(options.tmplPath + '/' + tmplName + '.tmpl', function(err, compiled) {
+	returnObj.render = function(tmplPath, data, callback) {
+		compileTmpl(options.tmplPath + '/' + tmplPath + '.tmpl', function(err, compiled) {
 			if (err) {
 				callback(err);
 				return;
@@ -63,17 +94,20 @@ exports = module.exports = function(options) {
 	/**
 	 * Render partials
 	 *
-	 * @param arr partials - one partial should consist of
-	 *                      {
-	 *                      	'partName': 'foo', // The name of this partial in the "master" template
-	 *                      	'tmplName': 'bar', // The name of the template file to be loaded
-	 *                        'data': {}'        // Local data for this partial rendering
-	 *                      }
-	 * @param obj rootData - the root data object, as given in the original call
-	 * @param int partialNr - can be replaced by the callback
+	 * @param obj structure - what data should be where
+	 *                        [
+	 *                          {
+	 *                            'partName': 'foo',     // The name of this partial in the "master" template
+	 *                            'tmplPath': 'bar',     // The name of the template file to be loaded
+	 *                            'data':     'data.foo' // String representation of path to data for this partial
+	 *                          },
+	 *                          etc
+	 *                        ]
+	 * @param obj data - data structure - pointers in the structure points here
+	 * @param int partialNr - should be replaced by the callback in the initial call
 	 * @param func callback(err, tmplStr)
 	 */
-	returnObj.renderPartials = function(partials, rootData, partialNr, callback) {
+	returnObj.renderPartials = function(structure, data, partialNr, callback) {
 		var localData,
 		    partial;
 
@@ -83,26 +117,36 @@ exports = module.exports = function(options) {
 			partialNr = 0;
 		}
 
-		partial = partials[partialNr];
+		partial = structure[partialNr];
 
-		localData = _.extend(partial.data, {'tmplParts': rootData.tmplParts});
+		localData = {
+			'tmplPath':  partial.tmplPath,
+			'tmplParts': data.tmplParts
+		};
 
-		if (rootData._global !== undefined) {
-			localData._global = rootData._global;
+		if (partial.data !== undefined) {
+			localData = _.extend(getValByPath(data, partial.data), localData);
+		} else {
+			localData = _.extend(data, localData);
 		}
 
-		returnObj.render(partial.tmplName, localData, function(err, tmplStr) {
+		// If a _global magic object key exists, always attach it to the local data
+		if (data._global !== undefined) {
+			localData._global = data._global;
+		}
+
+		returnObj.render(partial.tmplPath, localData, function(err, tmplStr) {
 			if (err) {
 				callback(err);
 				return;
 			}
 
-			rootData.tmplParts[partial.partName] = tmplStr;
+			data.tmplParts[partial.partName] = tmplStr;
 
 			partialNr ++;
 
-			if (partials[partialNr] !== undefined) {
-				returnObj.renderPartials(partials, rootData, partialNr, callback);
+			if (structure[partialNr] !== undefined) {
+				returnObj.renderPartials(structure, data, partialNr, callback);
 			} else {
 				callback(null, tmplStr);
 			}
