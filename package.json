@@ -2,7 +2,7 @@
 	"author": {
 		"name": "Mikael 'Lilleman' Göransson",
 		"email": "lilleman@larvit.se",
-		"url": "http://github.com/hemligabyran/larvitRouter"
+		"url": "http://github.com/larvit/larvitviews"
 	},
 	"private": false,
 	"contributors": [],
@@ -22,7 +22,7 @@
 		"url": "https://github.com/larvit/larvitviews",
 		"type": "git"
 	},
-	"version": "0.0.3beta",
+	"version": "0.0.4beta",
 	"readmeFilename": "README.md",
 	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {

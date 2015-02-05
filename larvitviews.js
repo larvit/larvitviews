@@ -5,7 +5,8 @@ var fs            = require('fs'),
     path          = require('path'),
     appPath       = path.dirname(require.main.filename),
     log           = require('winston'),
-    compiledTmpls = {};
+    compiledTmpls = {},
+    confFile      = require(appPath + '/config/view.json');
 
 /**
  * Compile templates and cache the compiled ones
@@ -69,8 +70,8 @@ exports = module.exports = function(options) {
 
 	// Copy options object - set default vars
 	options = _.extend({
-		'viewPath': appPath + '/public',
-		'tmplPath': appPath + '/public/views/tmpl'
+		'viewPath': appPath + confFile.viewPath,
+		'tmplPath': appPath + confFile.tmplPath
 	}, options);
 
 	/**
