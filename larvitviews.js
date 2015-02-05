@@ -70,9 +70,13 @@ exports = module.exports = function(options) {
 
 	// Copy options object - set default vars
 	options = _.extend({
-		'viewPath': appPath + confFile.viewPath,
-		'tmplPath': appPath + confFile.tmplPath
+		'viewPath':      appPath + confFile.viewPath,
+		'tmplPath':      appPath + confFile.tmplPath,
+		'underscoreExt': {}
 	}, options);
+
+	// Extend underscore with the underscoreExt options
+	_ = _.extend(_, options.underscoreExt);
 
 	/**
 	 * Render template
