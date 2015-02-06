@@ -114,7 +114,8 @@ exports = module.exports = function(options) {
 	 */
 	returnObj.renderPartials = function(structure, data, partialNr, callback) {
 		var localData,
-		    partial;
+		    partial,
+		    partialData;
 
 		// If partialNr is not supplied, it should be the callback function
 		if (typeof partialNr === 'function') {
@@ -130,7 +131,13 @@ exports = module.exports = function(options) {
 		};
 
 		if (partial.data !== undefined) {
-			localData = _.extend(getValByPath(data, partial.data), localData);
+			partialData = getValByPath(data, partial.data);
+
+			if (partialData !== undefined) {
+				localData = _.extend(partialData, localData);
+			} else {
+				log.warn('larvitviews: renderPartials() - getValByPath() on partial.data: "' + partial.data + '" failed');
+			}
 		} else {
 			localData = _.extend(data, localData);
 		}
