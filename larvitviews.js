@@ -138,6 +138,9 @@ exports = module.exports = function(options) {
 		// If a _global magic object key exists, always attach it to the local data
 		if (data._global !== undefined) {
 			localData._global = data._global;
+		} else {
+			// Always make sure the global is set not to cause undefined errors in templates
+			localData._global = {};
 		}
 
 		returnObj.render(partial.tmplPath, localData, function(err, tmplStr) {
