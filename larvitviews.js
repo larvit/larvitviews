@@ -133,6 +133,10 @@ exports = module.exports = function(options) {
 		if (partial.data !== undefined) {
 			partialData = getValByPath(data, partial.data);
 
+			if (partialData !== undefined && typeof partialData !== 'object') {
+				log.warn('larvitviews: renderPartials() - given partial data is not an object. Given path is "' + partial.data + '" and type is: "' + (typeof partialData) + '" with value: "' + partialData + '"');
+			}
+
 			if (partialData !== undefined) {
 				localData = _.extend(partialData, localData);
 			} else {
