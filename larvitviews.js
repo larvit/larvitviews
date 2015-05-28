@@ -138,7 +138,8 @@ exports = module.exports = function(options) {
 			}
 
 			if (partialData !== undefined) {
-				localData = _.extend(partialData, localData);
+				localData         = _.extend(partialData, localData);
+				localData._global = data._global;
 			} else {
 				log.warn('larvitviews: renderPartials() - getValByPath() on partial.data: "' + partial.data + '" failed. Most common reason for this error is the view structure is done in the wrong order.');
 			}
