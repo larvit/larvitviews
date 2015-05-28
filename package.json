@@ -22,7 +22,7 @@
 		"url": "https://github.com/larvit/larvitviews",
 		"type": "git"
 	},
-	"version": "0.0.8beta",
+	"version": "0.0.9",
 	"readmeFilename": "README.md",
 	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {
