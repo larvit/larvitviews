@@ -1,5 +1,11 @@
 # Larvitviews
 
-Wrapper for underscore templates
+Used as the "view" part of the MVC micro framework larvitbase.
 
-See documentation in the module "larvitbase" for how to set up views and templates
+It is essentially a wrapper for underscore templates, adding support for partials and hierarchy.
+
+When we selected template driver we had the following requirements:
+
+1. **All** HTML should reside in the templates and **nowhere** else. This is not debatable.
+2. It should resemble HTML as much as possible. Especially since the front enders normally just know HTML/CSS/js. It should not be a totally "new" language. This issue have been a burden in the past for us, for example when we used XSLT.
+3. It should be fast. **Really** fast.
