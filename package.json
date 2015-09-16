@@ -7,8 +7,9 @@
 	"private": false,
 	"contributors": [],
 	"dependencies": {
-		"underscore": "x",
-		"winston": "x"
+		"larvitrouter": "latest",
+		"underscore": "latest",
+		"winston": "latest"
 	},
 	"description": "Views for node.js",
 	"devDependencies": {},
@@ -22,7 +23,7 @@
 		"url": "https://github.com/larvit/larvitviews",
 		"type": "git"
 	},
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"readmeFilename": "README.md",
 	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {

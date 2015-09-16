@@ -6,7 +6,25 @@ var fs            = require('fs'),
     appPath       = path.dirname(require.main.filename),
     log           = require('winston'),
     compiledTmpls = {},
-    confFile      = require(appPath + '/config/view.json');
+    confFileName  = appPath + '/config/view.json',
+    larvitrouter  = require('larvitrouter')(),
+    confFile;
+
+log.debug('larvitviews: Check if config file, "' + confFileName + '", exists.');
+
+try {
+	fs.statSync(confFileName);
+	confFile = require(confFileName);
+	log.verbose('larvitviews: Config file "' + confFileName + '" loaded: ' + JSON.stringify(confFile));
+} catch(err) {
+	confFile = {
+		'formatDateTime': 'YYYY-MM-DD HH:mm',
+		'tmplPath':       'public/tmpl',
+		'viewPath':       'public'
+	};
+	log.verbose('larvitviews: Config file "' + confFileName + '" not found, loading defaults: ' + JSON.stringify(confFile));
+	log.debug('larvitviews: fs.statSync err: ' + err.message);
+}
 
 /**
  * Compile templates and cache the compiled ones
@@ -16,7 +34,7 @@ var fs            = require('fs'),
  */
 function compileTmpl(staticFilename, callback) {
 	if (compiledTmpls[staticFilename] === undefined) {
-		log.debug('larvitviews: Compiling previous uncompiled template "' + staticFilename + '"');
+		log.debug('larvitviews: compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
 
 		fs.readFile(staticFilename, 'utf8', function(err, tmplFileContent){
 			if ( ! err) {
@@ -24,7 +42,7 @@ function compileTmpl(staticFilename, callback) {
 
 				callback(null, compiledTmpls[staticFilename]);
 			} else {
-				log.error('larvitviews: Could not compile template "' + staticFilename + '"');
+				log.error('larvitviews: compileTmpl() - Could not compile template "' + staticFilename + '" err: ' + err.message);
 
 				callback(err);
 			}
@@ -70,8 +88,8 @@ exports = module.exports = function(options) {
 
 	// Copy options object - set default vars
 	options = _.extend({
-		'viewPath':      appPath + confFile.viewPath,
-		'tmplPath':      appPath + confFile.tmplPath,
+		'viewPath':      confFile.viewPath,
+		'tmplPath':      confFile.tmplPath,
 		'underscoreExt': {}
 	}, options);
 
@@ -81,18 +99,24 @@ exports = module.exports = function(options) {
 	/**
 	 * Render template
 	 *
-	 * @param str tmplPath - filename, without ".tmpl" and relative to options.tmplPath
+	 * @param str tmplName - template name, without ".tmpl" and relative to options.tmplPath - will be looked for by larvitrouter.fileExists() recursively
 	 * @param obj data - data to be passed to the template rendering
 	 * @param func callback(null, string)
 	 */
-	returnObj.render = function(tmplPath, data, callback) {
-		compileTmpl(options.tmplPath + '/' + tmplPath + '.tmpl', function(err, compiled) {
-			if (err) {
-				callback(err);
-				return;
-			}
+	returnObj.render = function(tmplName, data, callback) {
+		var tmplPath = options.tmplPath + '/' + tmplName + '.tmpl';
 
-			callback(null, compiled(data));
+		log.debug('larvitviews: render() - Trying to render "' + tmplName + '" with full path "' + tmplPath);
+
+		larvitrouter.fileExists(tmplPath, function(err, exists, fullPath) {
+			compileTmpl(fullPath, function(err, compiled) {
+				if (err) {
+					callback(err);
+					return;
+				}
+
+				callback(null, compiled(data));
+			});
 		});
 	};
 
