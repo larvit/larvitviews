@@ -8,11 +8,18 @@
 	"contributors": [],
 	"dependencies": {
 		"larvitrouter": "latest",
-		"underscore": "latest",
+		"lodash": "latest",
 		"winston": "latest"
 	},
 	"description": "Views for node.js",
-	"devDependencies": {},
+	"devDependencies": {
+		"mocha": "latest",
+		"pre-git": "latest"
+	},
+	"pre-commit": [
+		"npm test",
+		"eslint ./"
+	],
 	"keywords": [
 		"view",
 		"template"
@@ -23,12 +30,19 @@
 		"url": "https://github.com/larvit/larvitviews",
 		"type": "git"
 	},
-	"version": "0.0.11",
+	"version": "0.1.0",
 	"readmeFilename": "README.md",
 	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {
 		"url": "https://github.com/larvit/larvitviews/issues"
 	},
 	"homepage": "https://github.com/larvit/larvitviews",
-	"scripts": {}
+	"scripts": {
+		"test": "mocha"
+	},
+	"license": "MIT",
+	"maintainers": [{
+		"name": "lilleman",
+		"email": "lilleman@larvit.se"
+	}]
 }

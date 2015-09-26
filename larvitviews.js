@@ -1,32 +1,12 @@
 'use strict';
 
-var fs            = require('fs'),
-    _             = require('underscore'),
-    log           = require('winston'),
-    compiledTmpls = {},
-    larvitrouter  = require('larvitrouter')();
-
-/**
- * Compile templates and cache the compiled ones
- *
- * @param str staticFilename
- * @return func compileObj
- */
-function compileTmpl(staticFilename) {
-	var tmplFileContent;
-
-	if (compiledTmpls[staticFilename] === undefined) {
-		log.debug('larvitviews: compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
-
-		tmplFileContent               = fs.readFileSync(staticFilename, 'utf8');
-		compiledTmpls[staticFilename] = _.template(tmplFileContent);
-	}
-
-	return compiledTmpls[staticFilename];
-}
+var fs           = require('fs'),
+    _            = require('lodash'),
+    log          = require('winston'),
+    larvitrouter = require('larvitrouter')();
 
 exports = module.exports = function(options) {
-	var returnObj = {};
+	var returnObj = {'compiledTmpls': {}};
 
 	// Copy options object - set default vars
 	options = _.extend({
@@ -34,6 +14,27 @@ exports = module.exports = function(options) {
 		'tmplPath':       'public/tmpl',
 		'underscoreExt':  {}
 	}, options);
+
+	/**
+	 * Compile templates and cache the compiled ones
+	 *
+	 * @param str staticFilename
+	 * @return func compileObj
+	 */
+	returnObj.compileTmpl = function(staticFilename) {
+		var tmplFileContent;
+
+		if (returnObj.compiledTmpls[staticFilename] === undefined) {
+			log.debug('larvitviews: compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
+
+			tmplFileContent                         = fs.readFileSync(staticFilename, 'utf8');
+			returnObj.compiledTmpls[staticFilename] = _.template(tmplFileContent);
+		} else {
+			log.silly('larvitviews: compileTmpl() - Template "' + staticFilename + '" already compiled');
+		}
+
+		return returnObj.compiledTmpls[staticFilename];
+	}
 
 	/**
 	 * Render template
@@ -52,7 +53,7 @@ exports = module.exports = function(options) {
 		tmplFullPath = larvitrouter.fileExists(tmplPath);
 
 		if (tmplFullPath !== false) {
-			compiled = compileTmpl(tmplFullPath);
+			compiled = returnObj.compileTmpl(tmplFullPath);
 
 			return compiled(data);
 		}

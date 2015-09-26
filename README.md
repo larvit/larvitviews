@@ -1,6 +1,6 @@
 # Larvitviews
 
-Used as the "view" part of the MVC micro framework larvitbase.
+Used as the "view" part of the MVC micro framework [larvitbase](https://github.com/larvit/larvitbase), see usage documentation over there.
 
 It is essentially a wrapper for underscore templates, adding support for partials and hierarchy.
 
