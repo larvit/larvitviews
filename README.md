@@ -2,7 +2,7 @@
 
 Used as the "view" part of the MVC micro framework [larvitbase](https://github.com/larvit/larvitbase), see usage documentation over there.
 
-It is essentially a wrapper for underscore templates, adding support for partials and hierarchy.
+It is essentially a wrapper for lodash templates, adding support for partials and hierarchy.
 
 When we selected template driver we had the following requirements:
 

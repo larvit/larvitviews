@@ -34,7 +34,7 @@ exports = module.exports = function(options) {
 		}
 
 		return returnObj.compiledTmpls[staticFilename];
-	}
+	};
 
 	/**
 	 * Render template
