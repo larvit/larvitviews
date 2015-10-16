@@ -30,7 +30,7 @@
 		"url": "https://github.com/larvit/larvitviews",
 		"type": "git"
 	},
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"readmeFilename": "README.md",
 	"readme": "# larvitview\n\nVery simple view module",
 	"bugs": {

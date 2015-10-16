@@ -12,7 +12,8 @@ exports = module.exports = function(options) {
 	options = _.extend({
 		'formatDateTime': 'YYYY-MM-DD HH:mm',
 		'tmplPath':       'public/tmpl',
-		'underscoreExt':  {}
+		'underscoreExt':  {}, // Only kept for backward compability
+		'lodashExt':      {}
 	}, options);
 
 	/**
@@ -59,10 +60,11 @@ exports = module.exports = function(options) {
 		}
 	};
 
-	// Extend underscore with the underscoreExt options
+	// Extend lodash with the extensions
 	_ = _.extend(_, options.underscoreExt);
+	_ = _.extend(_, options.lodashExt);
 
-	// Extend underscore with the render method, so we can render other templates from within it.
+	// Extend lodash with the render method, so we can render other templates from within it.
 	_ = _.extend(_, {'render': returnObj.render});
 
 	return returnObj;
