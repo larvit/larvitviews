@@ -20,7 +20,7 @@ exports = module.exports = function(options) {
 	 * Compile templates and cache the compiled ones
 	 *
 	 * @param str staticFilename
-	 * @return func compileObj
+	 * @return func compileObj or err object
 	 */
 	returnObj.compileTmpl = function(staticFilename) {
 		var tmplFileContent;
@@ -28,8 +28,19 @@ exports = module.exports = function(options) {
 		if (returnObj.compiledTmpls[staticFilename] === undefined) {
 			log.debug('larvitviews: compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
 
-			tmplFileContent                         = fs.readFileSync(staticFilename, 'utf8');
-			returnObj.compiledTmpls[staticFilename] = _.template(tmplFileContent);
+			try {
+				tmplFileContent = fs.readFileSync(staticFilename, 'utf8');
+			} catch(err) {
+				log.warn('larvitviews: compileTmpl() - Error reading file "' + staticFilename + '" from disk. Error: ' + err.message);
+				return err;
+			}
+
+			try {
+				returnObj.compiledTmpls[staticFilename] = _.template(tmplFileContent);
+			} catch(err) {
+				log.warn('larvitviews: compileTmpl() - Could not compile template from file "' + staticFilename + '". Error: ' + err.message);
+				return err;
+			}
 		} else {
 			log.silly('larvitviews: compileTmpl() - Template "' + staticFilename + '" already compiled');
 		}
@@ -47,6 +58,7 @@ exports = module.exports = function(options) {
 	returnObj.render = function(tmplName, data) {
 		var tmplPath = options.tmplPath + '/' + tmplName + '.tmpl',
 		    tmplFullPath,
+		    compiledStr,
 		    compiled;
 
 		log.debug('larvitviews: render() - Trying to render "' + tmplName + '" with full path "' + tmplPath);
@@ -56,7 +68,19 @@ exports = module.exports = function(options) {
 		if (tmplFullPath !== false) {
 			compiled = returnObj.compileTmpl(tmplFullPath);
 
-			return compiled(data);
+			if (compiled instanceof Error) {
+				// Error is logged upstream. We should return it though
+				return compiled;
+			}
+
+			try {
+				compiledStr = compiled(data);
+			} catch(err) {
+				log.warn('larvitviews: render() - Could not render "' + tmplName + '". Error: ' + err.message);
+				return 'Error: ' + err.message;
+			}
+
+			return compiledStr;
 		}
 	};
 
