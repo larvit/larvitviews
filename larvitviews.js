@@ -1,12 +1,13 @@
 'use strict';
 
-var fs           = require('fs'),
-    _            = require('lodash'),
-    log          = require('winston'),
-    larvitrouter = require('larvitrouter')();
+const larvitrouter = require('larvitrouter')(),
+      log          = require('winston'),
+      fs           = require('fs');
+
+var _ = require('lodash');
 
 exports = module.exports = function(options) {
-	var returnObj = {'compiledTmpls': {}};
+	const returnObj = {'compiledTmpls': {}};
 
 	// Copy options object - set default vars
 	options = _.extend({
@@ -49,21 +50,25 @@ exports = module.exports = function(options) {
 	};
 
 	/**
-	 * Render template
+	 * Render template or other file
 	 *
-	 * @param str tmplName - template name, without ".tmpl" and relative to options.tmplPath - will be looked for by larvitrouter.fileExists() recursively
+	 * @param str fileName - filename to render. Will search for exact match first and then with added .tmpl, relative to options.tmplPath - will be looked for by larvitrouter.fileExists() recursively
 	 * @param obj data - data to be passed to the template rendering
 	 * @return str
 	 */
-	returnObj.render = function(tmplName, data) {
-		var tmplPath = options.tmplPath + '/' + tmplName + '.tmpl',
+	returnObj.render = function(fileName, data) {
+		var tmplPath = options.tmplPath + '/' + fileName,
 		    tmplFullPath,
 		    compiledStr,
 		    compiled;
 
-		log.debug('larvitviews: render() - Trying to render "' + tmplName + '" with full path "' + tmplPath);
+		log.debug('larvitviews: render() - Trying to render "' + fileName + '" with full path "' + tmplPath);
 
 		tmplFullPath = larvitrouter.fileExists(tmplPath);
+
+		// If the exact filename was not found, look for a file with added .tmpl at the end
+		if (tmplFullPath === false)
+			tmplFullPath = larvitrouter.fileExists(tmplPath + '.tmpl');
 
 		if (tmplFullPath !== false) {
 			compiled = returnObj.compileTmpl(tmplFullPath);
@@ -76,7 +81,7 @@ exports = module.exports = function(options) {
 			try {
 				compiledStr = compiled(data);
 			} catch(err) {
-				log.warn('larvitviews: render() - Could not render "' + tmplName + '". Error: ' + err.message);
+				log.warn('larvitviews: render() - Could not render "' + fileName + '". Error: ' + err.message);
 				return 'Error: ' + err.message;
 			}
 
