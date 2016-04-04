@@ -7,12 +7,13 @@
   "private": false,
   "contributors": [],
   "dependencies": {
-    "larvitrouter": "^0.1.15",
+    "larvitfs": "^1.0.0",
     "lodash": "^4.0.1",
     "winston": "^2.1.1"
   },
   "description": "Views for node.js",
   "devDependencies": {
+    "eslint": "^2.6.0",
     "mocha": "^2.4.2",
     "pre-git": "^3.3.0"
   },
@@ -22,15 +23,16 @@
   ],
   "keywords": [
     "view",
-    "template"
+    "template",
+    "templating"
   ],
-  "main": "larvitviews.js",
+  "main": "index.js",
   "name": "larvitviews",
   "repository": {
     "url": "https://github.com/larvit/larvitviews",
     "type": "git"
   },
-  "version": "0.3.0",
+  "version": "1.0.0",
   "readmeFilename": "README.md",
   "readme": "# larvitview\n\nVery simple view module",
   "bugs": {
@@ -38,8 +40,7 @@
   },
   "homepage": "https://github.com/larvit/larvitviews",
   "scripts": {
-    "test": "mocha",
-    "commit": "commit-wizard"
+    "test": "mocha"
   },
   "license": "MIT",
   "maintainers": [
