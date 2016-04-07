@@ -4,7 +4,9 @@
     "email": "lilleman@larvit.se",
     "url": "http://github.com/larvit/larvitviews"
   },
-  "private": false,
+  "bugs": {
+    "url": "https://github.com/larvit/larvitviews/issues"
+  },
   "contributors": [],
   "dependencies": {
     "larvitfs": "^1.0.0",
@@ -17,10 +19,6 @@
     "mocha": "^2.4.2",
     "pre-git": "^3.3.0"
   },
-  "pre-commit": [
-    "npm test",
-    "eslint ./"
-  ],
   "keywords": [
     "view",
     "template",
@@ -28,16 +26,18 @@
   ],
   "main": "index.js",
   "name": "larvitviews",
+  "pre-commit": [
+    "npm test",
+    "eslint ./"
+  ],
+  "private": false,
   "repository": {
     "url": "https://github.com/larvit/larvitviews",
     "type": "git"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "readmeFilename": "README.md",
   "readme": "# larvitview\n\nVery simple view module",
-  "bugs": {
-    "url": "https://github.com/larvit/larvitviews/issues"
-  },
   "homepage": "https://github.com/larvit/larvitviews",
   "scripts": {
     "test": "mocha"
