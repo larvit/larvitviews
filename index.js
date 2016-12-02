@@ -97,6 +97,7 @@ function renderInstance(options) {
 				compiledStr = compiled(data);
 			} catch(err) {
 				log.warn('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message);
+				log.verbose('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message + '. Data: ' + JSON.stringify(data));
 				return 'Error: ' + err.message;
 			}
 

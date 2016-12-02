@@ -9,15 +9,14 @@
   },
   "contributors": [],
   "dependencies": {
-    "larvitfs": "^1.0.0",
-    "lodash": "^4.0.1",
-    "winston": "^2.1.1"
+    "larvitfs": "^1.0.1",
+    "lodash": "^4.17.2",
+    "winston": "^2.3.0"
   },
   "description": "Views for node.js",
   "devDependencies": {
-    "eslint": "^2.6.0",
-    "mocha": "^2.4.2",
-    "pre-git": "^3.3.0"
+    "eslint": "^3.11.1",
+    "mocha": "^3.2.0"
   },
   "keywords": [
     "view",
@@ -26,16 +25,12 @@
   ],
   "main": "index.js",
   "name": "larvitviews",
-  "pre-commit": [
-    "npm test",
-    "eslint ./"
-  ],
   "private": false,
   "repository": {
     "url": "https://github.com/larvit/larvitviews",
     "type": "git"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "readmeFilename": "README.md",
   "readme": "# larvitview\n\nVery simple view module",
   "homepage": "https://github.com/larvit/larvitviews",
@@ -48,14 +43,5 @@
       "name": "lilleman",
       "email": "lilleman@larvit.se"
     }
-  ],
-  "config": {
-    "pre-git": {
-      "commit-msg": [],
-      "pre-commit": [],
-      "pre-push": [],
-      "post-commit": [],
-      "post-merge": []
-    }
-  }
+  ]
 }
