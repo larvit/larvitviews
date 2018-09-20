@@ -38,7 +38,7 @@ function renderInstance(options) {
 	 * @return func compileObj or false
 	 */
 	function compileTmpl(staticFilename) {
-		if (compiledTmpls.get(staticFilename) === undefined) {
+		if (compiledTmpls.get(staticFilename) === undefined || process.env.NODE_ENV === 'development') {
 			let tmplFileContent;
 
 			log.debug('larvitviews: renderInstance() - compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
