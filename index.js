@@ -1,7 +1,5 @@
 'use strict';
 
-const lfs = require('larvitfs');
-const log = require('winston');
 const fs = require('fs');
 
 let _ = require('lodash');
@@ -13,12 +11,12 @@ function renderInstance(options) {
 		if (compiledTmpls.get(staticFilename) === undefined || process.env.NODE_ENV === 'development') {
 			let tmplFileContent;
 
-			log.debug('larvitviews: renderInstance() - compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
+			options.log.debug('larvitviews: renderInstance() - compileTmpl() - Compiling previous uncompiled template "' + staticFilename + '"');
 
 			try {
 				tmplFileContent = fs.readFileSync(staticFilename, 'utf8');
 			} catch (err) {
-				log.warn('larvitviews: renderInstance() - compileTmpl() - Error reading file "' + staticFilename + '" from disk. Error: ' + err.message);
+				options.log.warn('larvitviews: renderInstance() - compileTmpl() - Error reading file "' + staticFilename + '" from disk. Error: ' + err.message);
 
 				return false;
 			}
@@ -26,12 +24,12 @@ function renderInstance(options) {
 			try {
 				compiledTmpls.set(staticFilename, _.template(tmplFileContent));
 			} catch (err) {
-				log.warn('larvitviews: renderInstance() - compileTmpl() - Could not compile template from file "' + staticFilename + '". Error: ' + err.message);
+				options.log.warn('larvitviews: renderInstance() - compileTmpl() - Could not compile template from file "' + staticFilename + '". Error: ' + err.message);
 
 				return false;
 			}
 		} else {
-			log.silly('larvitviews: renderInstance() - compileTmpl() - Template "' + staticFilename + '" already compiled');
+			options.log.silly('larvitviews: renderInstance() - compileTmpl() - Template "' + staticFilename + '" already compiled');
 		}
 
 		return compiledTmpls.get(staticFilename);
@@ -42,13 +40,13 @@ function renderInstance(options) {
 
 		let tmplFullPath;
 
-		log.debug('larvitviews: renderInstance() - render() - Trying to render "' + fileName + '" with path "' + tmplPath);
+		options.log.debug('larvitviews: renderInstance() - render() - Trying to render "' + fileName + '" with path "' + tmplPath);
 
-		tmplFullPath = lfs.getPathSync(tmplPath);
+		tmplFullPath = options.lfs.getPathSync(tmplPath);
 
 		// If the exact filename was not found, look for a file with added .tmpl at the end
 		if (tmplFullPath === false) {
-			tmplFullPath = lfs.getPathSync(tmplPath + '.tmpl');
+			tmplFullPath = options.lfs.getPathSync(tmplPath + '.tmpl');
 		}
 
 		if (tmplFullPath !== false) {
@@ -64,8 +62,8 @@ function renderInstance(options) {
 			try {
 				compiledStr = compiled(data);
 			} catch (err) {
-				log.warn('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message);
-				log.verbose('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message + '. Data: ' + JSON.stringify(data));
+				options.log.warn('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message);
+				options.log.verbose('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message + '. Data: ' + JSON.stringify(data));
 
 				return 'Error: ' + err.message;
 			}
@@ -89,6 +87,10 @@ function Instance(options) {
 	// Extend lodash with the extensions
 	_ = _.extend(_, this.options.underscoreExt);
 	_ = _.extend(_, this.options.lodashExt);
+
+	// Instantiate libraries if they are not passed as options
+	this.options.log = this.options.log || require('winston');
+	this.options.lfs = this.options.lfs || new (require('larvitfs'))();
 
 	// Extend lodash with the render method, so we can render other templates from within it.
 	_.render = renderInstance(this.options);
