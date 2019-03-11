@@ -1,42 +1,14 @@
 'use strict';
 
-const lfs = require('larvitfs'),
-      log = require('winston'),
-      fs  = require('fs');
+const lfs = require('larvitfs');
+const log = require('winston');
+const fs = require('fs');
 
 let _ = require('lodash');
-
-function Instance(options) {
-	// Copy options object - set default vars
-	this.options = _.extend({
-		'formatDateTime': 'YYYY-MM-DD HH:mm',
-		'tmplPath':       'public/tmpl',
-		'underscoreExt':  {}, // Only kept for backward compability
-		'lodashExt':      {}
-	}, options);
-
-	// Extend lodash with the extensions
-	_ = _.extend(_, this.options.underscoreExt);
-	_ = _.extend(_, this.options.lodashExt);
-
-	// Extend lodash with the render method, so we can render other templates from within it.
-	_.render = renderInstance(this.options);
-	//_ = _.extend(_, {'render': this.render});
-}
-
-Instance.prototype.render = function(fileName, data) {
-	return renderInstance(this.options)(fileName, data);
-};
 
 function renderInstance(options) {
 	const compiledTmpls = new Map();
 
-	/**
-	 * Compile templates and cache the compiled ones
-	 *
-	 * @param str staticFilename - Full exact path
-	 * @return func compileObj or false
-	 */
 	function compileTmpl(staticFilename) {
 		if (compiledTmpls.get(staticFilename) === undefined || process.env.NODE_ENV === 'development') {
 			let tmplFileContent;
@@ -45,15 +17,17 @@ function renderInstance(options) {
 
 			try {
 				tmplFileContent = fs.readFileSync(staticFilename, 'utf8');
-			} catch(err) {
+			} catch (err) {
 				log.warn('larvitviews: renderInstance() - compileTmpl() - Error reading file "' + staticFilename + '" from disk. Error: ' + err.message);
+
 				return false;
 			}
 
 			try {
 				compiledTmpls.set(staticFilename, _.template(tmplFileContent));
-			} catch(err) {
+			} catch (err) {
 				log.warn('larvitviews: renderInstance() - compileTmpl() - Could not compile template from file "' + staticFilename + '". Error: ' + err.message);
+
 				return false;
 			}
 		} else {
@@ -63,13 +37,6 @@ function renderInstance(options) {
 		return compiledTmpls.get(staticFilename);
 	};
 
-	/**
-	 * Render template or other file
-	 *
-	 * @param str fileName - filename to render. Will search for exact match first and then with added .tmpl, relative to options.tmplPath - will be looked for by lfs.getPathSync()
-	 * @param obj data - data to be passed to the template rendering
-	 * @return str or false
-	 */
 	return function render(fileName, data) {
 		const tmplPath = options.tmplPath + '/' + fileName;
 
@@ -80,24 +47,26 @@ function renderInstance(options) {
 		tmplFullPath = lfs.getPathSync(tmplPath);
 
 		// If the exact filename was not found, look for a file with added .tmpl at the end
-		if (tmplFullPath === false)
+		if (tmplFullPath === false) {
 			tmplFullPath = lfs.getPathSync(tmplPath + '.tmpl');
+		}
 
 		if (tmplFullPath !== false) {
-			let compiledStr,
-			    compiled;
+			let compiledStr;
+			let compiled;
 
 			compiled = compileTmpl(tmplFullPath);
 
-			if ( ! compiled) {
+			if (!compiled) {
 				return false;
 			}
 
 			try {
 				compiledStr = compiled(data);
-			} catch(err) {
+			} catch (err) {
 				log.warn('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message);
 				log.verbose('larvitviews: renderInstance() - render() - Could not render "' + fileName + '". Error: ' + err.message + '. Data: ' + JSON.stringify(data));
+
 				return 'Error: ' + err.message;
 			}
 
@@ -108,6 +77,27 @@ function renderInstance(options) {
 	};
 }
 
-exports = module.exports = function(options) {
+function Instance(options) {
+	// Copy options object - set default vars
+	this.options = _.extend({
+		formatDateTime: 'YYYY-MM-DD HH:mm',
+		tmplPath: 'public/tmpl',
+		underscoreExt: {}, // Only kept for backward compability
+		lodashExt: {}
+	}, options);
+
+	// Extend lodash with the extensions
+	_ = _.extend(_, this.options.underscoreExt);
+	_ = _.extend(_, this.options.lodashExt);
+
+	// Extend lodash with the render method, so we can render other templates from within it.
+	_.render = renderInstance(this.options);
+}
+
+Instance.prototype.render = function (fileName, data) {
+	return renderInstance(this.options)(fileName, data);
+};
+
+exports = module.exports = function (options) {
 	return new Instance(options);
 };
